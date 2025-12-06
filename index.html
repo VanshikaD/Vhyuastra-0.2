@@ -26,8 +26,11 @@
             font-family: 'Share Tech Mono', monospace;
             min-height: 100vh;
             margin: 0;
-            padding: 0;
+            padding: 8px;
             overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         @keyframes gradientBG {
@@ -63,8 +66,8 @@
         }
         
         .terminal-body {
-            padding: 20px;
-            max-height: 400px;
+            padding: 15px;
+            max-height: 300px;
             overflow-y: auto;
             background: rgba(0, 20, 0, 0.3);
         }
@@ -139,6 +142,16 @@
             font-size: 1.2em;
             margin: 20px 0;
             text-shadow: 0 0 10px currentColor;
+            position: relative;
+        }
+
+        .security-status::after {
+            content: '_';
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: var(--terminal-text);
+            animation: blink 1s infinite;
         }
         
         .status-secure {
@@ -177,24 +190,48 @@
         
         .notification {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px;
-            border-radius: 5px;
+            top: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 8px;
             color: white;
             font-weight: bold;
             z-index: 1000;
-            animation: slideIn 0.5s ease;
+            animation: slideIn 0.5s ease, slideOut 0.5s ease 4.5s forwards;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-left: 4px solid;
+            max-width: 400px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
         }
         
         @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
+            from { transform: translateX(400px); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
         
-        .notification.success { background: var(--success); }
-        .notification.warning { background: var(--warning); }
-        .notification.critical { background: var(--hacker-accent); }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        
+        .notification.success {
+            background: rgba(0, 255, 102, 0.15);
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+        
+        .notification.warning {
+            background: rgba(255, 51, 51, 0.15);
+            border-left-color: var(--warning);
+            color: var(--warning);
+        }
+        
+        .notification.critical {
+            background: rgba(255, 0, 128, 0.15);
+            border-left-color: var(--hacker-accent);
+            color: var(--hacker-accent);
+        }
         
         .tab-btn {
             background: #004400;
@@ -221,51 +258,107 @@
         .hidden {
             display: none;
         }
+
+        /* Enhanced Search Bar Styling */
+        #targetInput {
+            background: linear-gradient(45deg, rgba(0, 20, 0, 0.9), rgba(0, 0, 0, 0.9));
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4), inset 0 0 10px rgba(0, 255, 0, 0.1);
+            font-family: 'Share Tech Mono', monospace;
+            color: #00ff00;
+            padding: 12px 16px;
+            border-radius: 0;
+            position: relative;
+            transition: all 0.3s ease;
+            width: 120px;
+        }
+
+        #targetInput:focus {
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.8), inset 0 0 15px rgba(0, 255, 0, 0.2);
+            border-color: #00ff66;
+            background: linear-gradient(45deg, rgba(0, 30, 0, 0.9), rgba(0, 10, 0, 0.9));
+            transform: scale(1.02);
+        }
+
+        #targetInput:hover {
+            border-color: #00ff66;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6), inset 0 0 12px rgba(0, 255, 0, 0.15);
+        }
+
+        #targetInput::placeholder {
+            color: #00aa00;
+            opacity: 0.7;
+        }
+
+        /* Add terminal prompt style */
+        .input-container {
+            width: 100%;
+        }
+
+        .input-container::before {
+            content: ">";
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #00ff00;
+            font-weight: bold;
+            z-index: 1;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        #targetInput {
+            padding-left: 25px; /* Make room for the prompt */
+            text-align: left;
+            width: 200px;
+        }
     </style>
 </head>
-<body class="min-h-screen p-4">
+<body>
     <!-- Matrix Rain Background Effect -->
     <canvas id="matrixCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;"></canvas>
 
-    <div class="container mx-auto max-w-6xl">
+    <div class="container mx-auto max-w-5xl" style="width: 100%; max-width: 1200px; margin: 0 auto; padding: 40px; box-sizing: border-box; text-align: left;">
         <!-- Header -->
-        <header class="text-center mb-8 py-6">
-            <h1 class="glitch-text text-5xl md:text-6xl font-bold mb-4">H4CK3R SECURITY TERMINAL</h1>
-            <p class="text-lg opacity-80">// Penetration Testing & Vulnerability Assessment</p>
+        <header class="text-left mb-32 py-16">
+            <h1 class="glitch-text text-6xl md:text-7xl font-bold mb-8">H4CK3R SECURITY TERMINAL</h1>
+            <p class="text-xl opacity-80">// Security Assessment & Report Generator</p>
         </header>
 
         <!-- Main Content -->
-        <div class="grid md:grid-cols-2 gap-6 mb-8">
+        <div class="grid md:grid-cols-2 gap-12 mb-16">
             <!-- Input Panel -->
             <div class="terminal-window">
                 <div class="terminal-header">
-                    <span class="text-white font-bold">TARGET INPUT</span>
+                    <span class="text-white font-bold text-base">TARGET INPUT</span>
                 </div>
                 <div class="terminal-body">
-                    <div class="mb-6">
-                        <label class="block mb-2 text-sm">TARGET URL/IP:</label>
-                        <input 
-                            type="text" 
-                            id="targetInput"
-                            placeholder="example.com or 192.168.1.1"
-                            class="w-full bg-black border border-green-500 p-3 text-green-400 font-mono focus:outline-none focus:ring-2 focus:ring-green-500"
-                        >
+                    <div class="mb-5" style="text-align: left;">
+                        <label class="block mb-2 text-xs font-bold">TARGET URL/IP:</label>
+                        <div class="input-container">
+                            <input
+                                type="text"
+                                id="targetInput"
+                                placeholder="example.com or 192.168.1.1"
+                                class="w-full bg-black border-2 border-green-500 text-green-400 font-mono focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-400 placeholder-green-700 hover:border-green-400 transition duration-300"
+                            >
+                        </div>
                     </div>
                     
-                    <div class="mb-6">
-                        <label class="block mb-2 text-sm">SELECT TOOLS:</label>
+                    <div class="mb-5">
+                        <label class="block mb-3 text-xs">SELECT TOOLS:</label>
                         <div class="space-y-2">
                             <label class="flex items-center">
-                                <input type="checkbox" id="nmapScan" checked class="form-checkbox text-green-500">
-                                <span class="ml-2">NMAP Port Scanner</span>
+                                <input type="checkbox" id="phishShieldScan" checked class="form-checkbox text-green-500">
+                                <span class="ml-2">Phish Shield Link Analysis</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" id="wiresharkScan" checked class="form-checkbox text-green-500">
-                                <span class="ml-2">Wireshark Packet Analysis</span>
+                                <input type="checkbox" id="phishTankScan" checked class="form-checkbox text-green-500">
+                                <span class="ml-2">PhishTank Database Lookup</span>
                             </label>
                             <label class="flex items-center">
                                 <input type="checkbox" id="vulnScan" checked class="form-checkbox text-green-500">
-                                <span class="ml-2">Vulnerability Assessment</span>
+                                <span class="ml-2">Phishing Risk Assessment</span>
                             </label>
                         </div>
                     </div>
@@ -279,32 +372,32 @@
             <!-- Status Panel -->
             <div class="terminal-window">
                 <div class="terminal-header">
-                    <span class="text-white font-bold">SECURITY STATUS</span>
+                    <span class="text-white font-bold text-base">SECURITY STATUS</span>
                 </div>
                 <div class="terminal-body">
-                    <div id="securityStatus" class="security-status status-warning">
-                        <div class="text-2xl mb-2">🔒 SYSTEM READY</div>
-                        <div>AWAITING TARGET INPUT...</div>
+                    <div id="securityStatus" class="security-status status-warning" style="margin: 0 0 15px 0; padding: 12px; font-size: 0.9em;">
+                        <div class="text-lg mb-1">🔒 SYSTEM READY</div>
+                        <div style="font-size: 0.8em;">AWAITING TARGET INPUT...</div>
                     </div>
                     
-                    <div class="grid grid-cols-3 gap-4 mb-4">
-                        <div class="text-center p-3 bg-black border border-green-500">
-                            <div class="text-2xl font-bold" id="openPorts">0</div>
-                            <div class="text-sm">OPEN PORTS</div>
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="text-center p-2 bg-black border border-green-500">
+                            <div class="text-lg font-bold" id="phishDetected">0</div>
+                            <div class="text-xs">PHISHING URLS</div>
                         </div>
-                        <div class="text-center p-3 bg-black border border-green-500">
-                            <div class="text-2xl font-bold" id="vulnerabilities">0</div>
-                            <div class="text-sm">VULNERABILITIES</div>
+                        <div class="text-center p-2 bg-black border border-green-500">
+                            <div class="text-lg font-bold" id="suspiciousLinks">0</div>
+                            <div class="text-xs">SUSPICIOUS LINKS</div>
                         </div>
-                        <div class="text-center p-3 bg-black border border-green-500">
-                            <div class="text-2xl font-bold" id="threatLevel">LOW</div>
-                            <div class="text-sm">THREAT LEVEL</div>
+                        <div class="text-center p-2 bg-black border border-green-500">
+                            <div class="text-lg font-bold" id="riskLevel">LOW</div>
+                            <div class="text-xs">RISK LEVEL</div>
                         </div>
                     </div>
                     
-                    <div class="bg-black p-3 border border-green-500">
-                        <div class="text-sm mb-2">SCAN PROGRESS:</div>
-                        <div class="w-full bg-gray-800 h-4 border border-green-500">
+                    <div class="bg-black p-2 border border-green-500 text-xs">
+                        <div class="mb-2">SCAN PROGRESS:</div>
+                        <div class="w-full bg-gray-800 h-3 border border-green-500">
                             <div id="progressBar" class="h-full bg-green-500 transition-all duration-300" style="width: 0%"></div>
                         </div>
                     </div>
@@ -313,67 +406,68 @@
         </div>
 
         <!-- Results Tabs -->
-        <div class="terminal-window mb-8">
-            <div class="terminal-header flex space-x-4">
-                <button class="tab-btn active" onclick="switchTab('nmap', event)">NMAP RESULTS</button>
-                <button class="tab-btn" onclick="switchTab('wireshark', event)">WIRESHARK DATA</button>
-                <button class="tab-btn" onclick="switchTab('vulnerabilities', event)">VULNERABILITIES</button>
+        <div class="terminal-window mb-12">
+            <div class="terminal-header flex space-x-2">
+                <button class="tab-btn active text-xs py-2 px-3" onclick="switchTab('phishShield', event)">PHISH SHIELD RESULTS</button>
+                <button class="tab-btn text-xs py-2 px-3" onclick="switchTab('phishTank', event)">PHISHTANK DATA</button>
+                <button class="tab-btn text-xs py-2 px-3" onclick="switchTab('vulnerabilities', event)">RISK ASSESSMENT</button>
             </div>
             <div class="terminal-body">
-                <!-- NMAP Results -->
-                <div id="nmapTab" class="tab-content">
-                    <div class="tool-output">
-                        <span class="text-gray-400"># nmap -sS -sV -O</span>
+                <!-- Phish Shield Results -->
+                <div id="phishShieldTab" class="tab-content">
+                    <div class="tool-output text-sm">
+                        <span class="text-gray-400"># phish-shield --analyze-links</span>
                         <br>
-                        <span id="nmapOutput">Awaiting scan results...</span>
+                        <span id="phishShieldOutput">Awaiting scan results...</span>
                     </div>
                 </div>
-                
-                <!-- Wireshark Results -->
-                <div id="wiresharkTab" class="tab-content hidden">
-                    <div class="tool-output">
-                        <span class="text-gray-400"># tshark -r capture.pcap -Y "http or ssl"</span>
+
+                <!-- PhishTank Results -->
+                <div id="phishTankTab" class="tab-content hidden">
+                    <div class="tool-output text-sm">
+                        <span class="text-gray-400"># phishtank --database-lookup</span>
                         <br>
-                        <span id="wiresharkOutput">Packet analysis pending...</span>
+                        <span id="phishTankOutput">Database lookup pending...</span>
                     </div>
                 </div>
-                
-                <!-- Vulnerabilities Results -->
+
+                <!-- Risk Assessment Results -->
                 <div id="vulnerabilitiesTab" class="tab-content hidden">
-                    <div class="tool-output">
-                        <span class="text-gray-400"># vulnerability-scan --full</span>
+                    <div class="tool-output text-sm">
+                        <span class="text-gray-400"># phishing-risk-assessment --full</span>
                         <br>
-                        <span id="vulnOutput">Vulnerability assessment pending...</span>
+                        <span id="vulnOutput">Risk assessment pending...</span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comprehensive Security Report -->
+        <div class="terminal-window mb-12">
+            <div class="terminal-header">
+                <span class="text-white font-bold text-base">COMPREHENSIVE SECURITY REPORT</span>
+            </div>
+            <div class="terminal-body">
+                <p class="mb-4 text-xs text-center">Complete security assessment report generated after full scan completion</p>
+                <div id="reportDisplay" class="bg-black p-4 border border-green-500 mb-4 max-h-64 overflow-y-auto hidden text-center">
+                    <pre id="reportContent" class="tool-output text-green-400 text-xs leading-relaxed text-left mx-auto max-w-4xl"></pre>
+                </div>
+                <div class="text-center">
+                    <button onclick="generateReport()" class="hacker-button text-sm py-2 px-6">
+                        DOWNLOAD COMPLETE REPORT
+                    </button>
                 </div>
             </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="grid md:grid-cols-3 gap-4 mb-8">
-            <button onclick="exportResults()" class="hacker-button">
+        <div class="grid md:grid-cols-2 gap-4 mb-8">
+            <button onclick="exportResults()" class="hacker-button text-sm py-2">
                 EXPORT RESULTS
             </button>
-            <button onclick="clearScan()" class="hacker-button">
+            <button onclick="clearScan()" class="hacker-button text-sm py-2">
                 CLEAR SCAN
             </button>
-
-        </div>
-
-        <!-- Report Download Section -->
-        <div class="terminal-window mb-8">
-            <div class="terminal-header">
-                <span class="text-white font-bold">REPORT DOWNLOAD</span>
-            </div>
-            <div class="terminal-body">
-                <p class="mb-4">View and download the complete scanned report containing all security assessment results from the previous scan, including NMAP scans, Wireshark data, and vulnerability findings.</p>
-                <div id="reportDisplay" class="bg-black p-4 border border-green-500 mb-4 max-h-64 overflow-y-auto hidden">
-                    <pre id="reportContent" class="tool-output text-green-400"></pre>
-                </div>
-                <button onclick="generateReport()" class="hacker-button w-full">
-                    DOWNLOAD SCANNED REPORT
-                </button>
-            </div>
         </div>
     </div>
 
@@ -450,8 +544,8 @@
             }
             
             // Reset results
-            document.getElementById('nmapOutput').textContent = 'Awaiting scan results...';
-            document.getElementById('wiresharkOutput').textContent = 'Packet analysis pending...';
+            document.getElementById('phishShieldOutput').textContent = 'Awaiting scan results...';
+            document.getElementById('phishTankOutput').textContent = 'Database lookup pending...';
             document.getElementById('vulnOutput').textContent = 'Vulnerability assessment pending...';
             
             // Update UI
@@ -463,9 +557,9 @@
             `;
             
             // Reset counters
-            document.getElementById('openPorts').textContent = '0';
-            document.getElementById('vulnerabilities').textContent = '0';
-            document.getElementById('threatLevel').textContent = 'SCANNING';
+            document.getElementById('phishDetected').textContent = '0';
+            document.getElementById('suspiciousLinks').textContent = '0';
+            document.getElementById('riskLevel').textContent = 'SCANNING';
             
             // Simulate progress
             let progress = 0;
@@ -481,9 +575,9 @@
             
             // Simulate scan results
             setTimeout(() => {
-                simulateNmapScan(target);
-                simulateWiresharkScan(target);
-                simulateVulnerabilityScan(target);
+                simulatePhishShieldScan(target);
+                simulatePhishTankScan(target);
+                simulateRiskAssessmentScan(target);
             }, 1000);
         }
         
@@ -515,115 +609,149 @@
             const statusElement = document.getElementById('securityStatus');
             statusElement.className = `security-status ${statusClass}`;
             statusElement.innerHTML = `
-                <div class="text-2xl mb-2">${status === 'secure' ? '✅' : '⚠'} ${statusText}</div>
-                <div>TARGET: ${target}</div>
+                <div class="text-lg mb-1">${status === 'secure' ? '✅' : '⚠'} ${statusText}</div>
+                <div style="font-size: 0.8em;">TARGET: ${target}</div>
             `;
             
             // Update counters with realistic values based on scan results
-            const nmapText = document.getElementById('nmapOutput').textContent;
-            const openPorts = (nmapText.match(/open/g) || []).length;
+            const phishText = document.getElementById('phishShieldOutput').textContent;
+            const phishDetected = (phishText.match(/malicious|phishing/gi) || []).length;
             const vulnText = document.getElementById('vulnOutput').textContent;
-            const vulnerabilities = (vulnText.match(/HIGH|MEDIUM|LOW/g) || []).length;
+            const riskVulns = (vulnText.match(/HIGH|MEDIUM|LOW/g) || []).length;
             
-            document.getElementById('openPorts').textContent = openPorts;
-            document.getElementById('vulnerabilities').textContent = vulnerabilities;
-            document.getElementById('threatLevel').textContent = status.toUpperCase();
+            document.getElementById('phishDetected').textContent = phishDetected;
+            document.getElementById('suspiciousLinks').textContent = riskVulns;
+            document.getElementById('riskLevel').textContent = status.toUpperCase();
             
             showNotification(notificationMsg, status);
         }
         
-        function simulateNmapScan(target) {
-            const ports = [
-                {port: 22, service: 'ssh', state: 'open', version: 'OpenSSH 8.4'},
-                {port: 80, service: 'http', state: 'open', version: 'nginx/1.18.0'},
-                {port: 443, service: 'https', state: 'open', version: 'nginx/1.18.0'},
-                {port: 21, service: 'ftp', state: 'filtered', version: ''},
-                {port: 25, service: 'smtp', state: 'closed', version: ''},
-                {port: 3389, service: 'rdp', state: 'open', version: 'Microsoft Terminal Services'}
+        function simulatePhishShieldScan(target) {
+            const results = [
+                {url: 'https://example.com/login', status: 'legitimate', trust: '98%'},
+                {url: 'https://secure-bank.com', status: 'legitimate', trust: '95%'},
+                {url: 'https://verify-account-now.com', status: 'malicious', trust: '2%'},
+                {url: 'https://paypal-confirm.net', status: 'phishing', trust: '1%'},
+                {url: 'https://official-service.org', status: 'legitimate', trust: '92%'}
             ];
             
-            let output = `Starting Nmap scan for ${target}\n\n`;
-            output += 'PORT     STATE    SERVICE    VERSION\n';
-            output += '───────────────────────────────────\n';
-            
-            ports.forEach(p => {
-                const stateClass = p.state === 'open' ? 'port-open' : 
-                                 p.state === 'filtered' ? 'port-filtered' : 'port-closed';
-                output += `${p.port}/tcp   ${p.state.padEnd(8)} ${p.service.padEnd(9)} ${p.version}\n`;
-            });
-            
-            output += '\nNmap scan complete.';
-            document.getElementById('nmapOutput').innerHTML = output;
-        }
-        
-        function simulateWiresharkScan(target) {
-            const packets = [
-                {time: '0.000000', src: '192.168.1.100', dst: target, protocol: 'TCP', info: '443 → 54321 [SYN]'},
-                {time: '0.001234', src: target, dst: '192.168.1.100', protocol: 'TCP', info: '54321 → 443 [SYN, ACK]'},
-                {time: '0.002567', src: '192.168.1.100', dst: target, protocol: 'TLS', info: 'Client Hello'},
-                {time: '0.003891', src: target, dst: '192.168.1.100', protocol: 'TLS', info: 'Server Hello'},
-                {time: '0.005123', src: '192.168.1.100', dst: target, protocol: 'HTTP', info: 'GET / HTTP/1.1'},
-                {time: '0.006456', src: target, dst: '192.168.1.100', protocol: 'HTTP', info: 'HTTP/1.1 200 OK'}
-            ];
-            
-            let output = `Packet capture analysis for ${target}\n\n`;
-            output += 'TIME        SOURCE           DESTINATION    PROTOCOL  INFO\n';
+            let output = `Phish Shield Link Analysis for ${target}\n\n`;
+            output += 'URL                              STATUS      TRUST SCORE\n';
             output += '─────────────────────────────────────────────────────────\n';
             
-            packets.forEach(p => {
-                output += `${p.time}  ${p.src.padEnd(15)} ${p.dst.padEnd(15)} ${p.protocol.padEnd(8)} ${p.info}\n`;
+            results.forEach(r => {
+                output += `${r.url.padEnd(30)} ${r.status.padEnd(11)} ${r.trust}\n`;
             });
             
-            document.getElementById('wiresharkOutput').textContent = output;
+            output += '\nAnalysis complete. Found 2 potential phishing threats.';
+            document.getElementById('phishShieldOutput').textContent = output;
         }
         
-        function simulateVulnerabilityScan(target) {
-            const vulns = [
-                {severity: 'HIGH', description: 'Outdated OpenSSH version - Potential CVE-2021-41617'},
-                {severity: 'MEDIUM', description: 'Missing X-Content-Type-Options header'},
-                {severity: 'LOW', description: 'Server information disclosure in headers'},
-                {severity: 'HIGH', description: 'SSL/TLS weak cipher suite enabled'},
-                {severity: 'MEDIUM', description: 'Missing Content Security Policy header'}
+        function simulatePhishTankScan(target) {
+            const dbResults = [
+                {entry: 'Database check initiated...', result: 'active'},
+                {entry: 'Checking against 15M+ known phishing URLs', result: 'in_progress'},
+                {entry: 'Cross-referencing threat intelligence feeds', result: 'active'},
+                {entry: 'Target domain found in database', result: 'match'},
+                {entry: 'Phishing submission verified on 2024-12-01', result: 'confirmed'}
             ];
             
-            let output = `Vulnerability assessment for ${target}\n\n`;
-            output += 'SEVERITY  DESCRIPTION\n';
-            output += '─────────────────────────────────────────────────\n';
+            let output = `PhishTank Database Lookup for ${target}\n\n`;
+            output += 'DATABASE ENTRY                                 STATUS\n';
+            output += '─────────────────────────────────────────────────────────\n';
             
-            vulns.forEach(v => {
-                const severityColor = v.severity === 'HIGH' ? 'text-red-400' : 
-                                    v.severity === 'MEDIUM' ? 'text-yellow-400' : 'text-green-400';
-                output += `<span class="${severityColor}">${v.severity.padEnd(8)}</span> ${v.description}\n`;
+            dbResults.forEach(r => {
+                output += `${r.entry.padEnd(42)} [${r.result}]\n`;
             });
             
-            document.getElementById('vulnOutput').innerHTML = output;
+            output += '\nDatabase lookup complete.';
+            document.getElementById('phishTankOutput').textContent = output;
         }
         
-        function generateReport() {
-            // Ask for confirmation before downloading
-            if (!confirm('Are you sure you want to download the scanned report?')) {
-                return;
-            }
+        function simulateRiskAssessmentScan(target) {
+            const riskFactors = [
+                {severity: 'HIGH', description: 'Domain registered less than 30 days ago - New domain risk'},
+                {severity: 'MEDIUM', description: 'Missing HTTPS certificate or weak encryption'},
+                {severity: 'HIGH', description: 'Suspicious URL pattern detected - Similar to known phishing'},
+                {severity: 'MEDIUM', description: 'No WHOIS privacy protection - Potential credential leak'},
+                {severity: 'LOW', description: 'Domain reputation score below threshold'}
+            ];
+            
+            let output = `Phishing Risk Assessment for ${target}\n\n`;
+            output += 'RISK LEVEL  DESCRIPTION\n';
+            output += '─────────────────────────────────────────────────────────\n';
+            
+            riskFactors.forEach(r => {
+                output += `${r.severity.padEnd(10)} ${r.description}\n`;
+            });
+            
+            output += '\nRisk assessment complete. Overall risk: MEDIUM';
+            document.getElementById('vulnOutput').textContent = output;
+            
+            // Auto-populate the report section after all scans complete
+            setTimeout(() => {
+                displayFullReport(target);
+            }, 500);
+        }
+        
+        function displayFullReport(target) {
+            const phishShield = document.getElementById('phishShieldOutput').textContent || '';
+            const phishTank = document.getElementById('phishTankOutput').textContent || '';
+            const riskAssessment = document.getElementById('vulnOutput').textContent || '';
 
-            // Collect scan results
-            const target = document.getElementById('targetInput').value.trim();
-            const nmap = document.getElementById('nmapOutput').textContent || '';
-            const wireshark = document.getElementById('wiresharkOutput').textContent || '';
-            // Remove HTML tags from vulnerabilities output
-            const vulnHtml = document.getElementById('vulnOutput').innerHTML || '';
-            const vuln = vulnHtml.replace(/<[^>]+>/g, '');
-
-            let report = `H4CK3R SECURITY TERMINAL REPORT\n\n`;
-            report += `Target: ${target}\n\n`;
-            report += `--- NMAP RESULTS ---\n${nmap}\n\n`;
-            report += `--- WIRESHARK DATA ---\n${wireshark}\n\n`;
-            report += `--- VULNERABILITIES ---\n${vuln}\n\n`;
+            let report = `╔═══════════════════════════════════════════════════════════════════════════╗\n`;
+            report += `║     H4CK3R SECURITY TERMINAL - SCAN REPORT                            ║\n`;
+            report += `╚═══════════════════════════════════════════════════════════════════════════╝\n\n`;
+            report += `Target: ${target}\n`;
+            report += `Scan Date: ${new Date().toISOString()}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISH SHIELD LINK ANALYSIS\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${phishShield}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISHTANK DATABASE LOOKUP\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${phishTank}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISHING RISK ASSESSMENT\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${riskAssessment}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `Report Generated: ${new Date().toLocaleString()}\n`;
 
             // Display the report content in the section
             const reportContent = document.getElementById('reportContent');
             const reportDisplay = document.getElementById('reportDisplay');
             reportContent.textContent = report;
             reportDisplay.classList.remove('hidden');
+        }
+        
+        function generateReport() {
+            // Collect scan results
+            const target = document.getElementById('targetInput').value.trim();
+            
+            if (!target) {
+                showNotification('Please run a scan first!', 'warning');
+                return;
+            }
+            
+            const phishShield = document.getElementById('phishShieldOutput').textContent || '';
+            const phishTank = document.getElementById('phishTankOutput').textContent || '';
+            const riskAssessment = document.getElementById('vulnOutput').textContent || '';
+
+            let report = `╔═══════════════════════════════════════════════════════════════════════════╗\n`;
+            report += `║     H4CK3R SECURITY TERMINAL - SCAN REPORT                            ║\n`;
+            report += `╚═══════════════════════════════════════════════════════════════════════════╝\n\n`;
+            report += `Target: ${target}\n`;
+            report += `Scan Date: ${new Date().toISOString()}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISH SHIELD LINK ANALYSIS\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${phishShield}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISHTANK DATABASE LOOKUP\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${phishTank}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISHING RISK ASSESSMENT\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${riskAssessment}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `Report Generated: ${new Date().toLocaleString()}\n`;
 
             // Create a Blob and download
             const blob = new Blob([report], { type: 'text/plain' });
@@ -631,42 +759,44 @@
 
             const a = document.createElement('a');
             a.href = url;
-            a.download = `scan_report_${target || 'unknown'}.txt`;
+            a.download = `security_report_${target}_${new Date().getTime()}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            showNotification('Security report downloaded!', 'success');
+            showNotification('✓ Security report downloaded successfully!', 'success');
         }
         
         function exportResults() {
-            showNotification('Exporting scan results...', 'success');
+            showNotification('⏳ Exporting scan results to /reports/...', 'warning');
             setTimeout(() => {
-                showNotification('Results exported to /reports/', 'success');
-            }, 2000);
+                showNotification('✓ Results exported successfully!', 'success');
+            }, 1500);
         }
         
         function clearScan() {
             document.getElementById('targetInput').value = '';
             document.getElementById('securityStatus').className = 'security-status status-warning';
             document.getElementById('securityStatus').innerHTML = `
-                <div class="text-2xl mb-2">🔒 SYSTEM READY</div>
-                <div>AWAITING TARGET INPUT...</div>
+                <div class="text-lg mb-1">🔒 SYSTEM READY</div>
+                <div style="font-size: 0.8em;">AWAITING TARGET INPUT...</div>
             `;
             document.getElementById('progressBar').style.width = '0%';
-            document.getElementById('openPorts').textContent = '0';
-            document.getElementById('vulnerabilities').textContent = '0';
-            document.getElementById('threatLevel').textContent = 'LOW';
-            document.getElementById('nmapOutput').textContent = 'Awaiting scan results...';
-            document.getElementById('wiresharkOutput').textContent = 'Packet analysis pending...';
-            document.getElementById('vulnOutput').textContent = 'Vulnerability assessment pending...';
+            document.getElementById('phishDetected').textContent = '0';
+            document.getElementById('suspiciousLinks').textContent = '0';
+            document.getElementById('riskLevel').textContent = 'LOW';
+            document.getElementById('phishShieldOutput').textContent = 'Awaiting scan results...';
+            document.getElementById('phishTankOutput').textContent = 'Database lookup pending...';
+            document.getElementById('vulnOutput').textContent = 'Risk assessment pending...';
+            document.getElementById('reportDisplay').classList.add('hidden');
+            showNotification('✓ Scan cleared successfully!', 'success');
         }
         
         // Make sure tabs work properly
         document.addEventListener('DOMContentLoaded', function() {
             // Ensure first tab is active
-            switchTab('nmap', {target: document.querySelector('.tab-btn.active')});
+            switchTab('phishShield', {target: document.querySelector('.tab-btn.active')});
         });
     </script>
 </body>
