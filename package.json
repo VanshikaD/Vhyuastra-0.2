@@ -1,0 +1,20 @@
+{
+  "name": "hackthon-real",
+  "version": "1.0.0",
+  "description": "Secuity testing website",
+  "license": "ISC",
+  "author": "Pranit,Rajesh",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "build-css": "tailwindcss -i ./input.css -o ./dist/output.css --watch",
+    "build-css-prod": "tailwindcss -i ./input.css -o ./dist/output.css --minify",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "postcss-cli": "^11.0.1",
+    "tailwindcss": "^4.1.13"
+  }
+}
