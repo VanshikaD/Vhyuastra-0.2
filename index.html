@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>H4CK3R Security Terminal</title>
-    <link href="./dist/output.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chatbot.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
         
@@ -13,6 +15,820 @@
             --terminal-text: #00ff00;
             --terminal-border: #00ff00;
             --hacker-accent: #ff0080;
+            --warning: #ff3333;
+            --success: #00ff66;
+            --info: #0099ff;
+        }
+        
+        body {
+            background: linear-gradient(45deg, #000000, #0a0a0a, #001a00);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--terminal-text);
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            margin: 0;
+            padding: 8px;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .glitch-text {
+            text-shadow: 2px 2px 0 var(--hacker-accent), -2px -2px 0 #00ffff;
+            animation: glitch 1s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px 0 var(--hacker-accent), -2px -2px 0 #00ffff; }
+            50% { text-shadow: -2px -2px 0 var(--hacker-accent), 2px 2px 0 #00ffff; }
+            100% { text-shadow: 2px 2px 0 var(--hacker-accent), -2px -2px 0 #00ffff; }
+        }
+        
+        .terminal-window {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--terminal-border);
+            border-radius: 5px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .terminal-header {
+            background: linear-gradient(90deg, #004400, #007700);
+            padding: 10px;
+            border-bottom: 1px solid var(--terminal-border);
+        }
+        
+        .terminal-body {
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0, 20, 0, 0.3);
+        }
+        
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: var(--terminal-text);
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--hacker-accent), transparent);
+            animation: scan 2s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+        
+        .hacker-button {
+            background: linear-gradient(45deg, #004400, #007700);
+            border: 1px solid var(--terminal-border);
+            color: var(--terminal-text);
+            padding: 12px 24px;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hacker-button:hover {
+            background: linear-gradient(45deg, #007700, #00aa00);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .hacker-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .hacker-button:hover:before {
+            left: 100%;
+        }
+        
+        .security-status {
+            border: 2px solid;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            text-shadow: 0 0 10px currentColor;
+            position: relative;
+        }
+
+        .security-status::after {
+            content: '_';
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: var(--terminal-text);
+            animation: blink 1s infinite;
+        }
+        
+        .status-secure {
+            border-color: var(--success);
+            color: var(--success);
+            background: rgba(0, 255, 102, 0.1);
+        }
+        
+        .status-warning {
+            border-color: var(--warning);
+            color: var(--warning);
+            background: rgba(255, 51, 51, 0.1);
+        }
+        
+        .status-critical {
+            border-color: var(--hacker-accent);
+            color: var(--hacker-accent);
+            background: rgba(255, 0, 128, 0.1);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 128, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(255, 0, 128, 0.6); }
+        }
+        
+        .tool-output {
+            font-family: 'Share Tech Mono', monospace;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+        
+        .port-open { color: var(--success); }
+        .port-filtered { color: var(--warning); }
+        .port-closed { color: var(--info); }
+        
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideIn 0.5s ease, slideOut 0.5s ease 4.5s forwards;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-left: 4px solid;
+            max-width: 400px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        
+        .notification.success {
+            background: rgba(0, 255, 102, 0.15);
+            border-left-color: var(--success);
+            color: var(--success);
+        }
+        
+        .notification.warning {
+            background: rgba(255, 51, 51, 0.15);
+            border-left-color: var(--warning);
+            color: var(--warning);
+        }
+        
+        .notification.critical {
+            background: rgba(255, 0, 128, 0.15);
+            border-left-color: var(--hacker-accent);
+            color: var(--hacker-accent);
+        }
+        
+        .tab-btn {
+            background: #004400;
+            border: 1px solid var(--terminal-border);
+            color: var(--terminal-text);
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            background: #007700;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        
+        .tab-btn:hover {
+            background: #00aa00;
+        }
+        
+        .tab-content {
+            display: block;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        /* Enhanced Search Bar Styling */
+        #targetInput {
+            background: linear-gradient(45deg, rgba(0, 20, 0, 0.9), rgba(0, 0, 0, 0.9));
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4), inset 0 0 10px rgba(0, 255, 0, 0.1);
+            font-family: 'Share Tech Mono', monospace;
+            color: #00ff00;
+            padding: 12px 16px;
+            border-radius: 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        #targetInput::placeholder {
+            color: rgba(0, 255, 0, 0.5);
+        }
+
+        #targetInput:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.6), inset 0 0 15px rgba(0, 255, 0, 0.2);
+        }
+
+        #targetInput:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), inset 0 0 12px rgba(0, 255, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Rain Background Effect -->
+    <canvas id="matrixCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;"></canvas>
+
+    <div class="container mx-auto max-w-5xl" style="width: 100%; max-width: 1000px;">
+        <!-- Header -->
+        <header class="text-center mb-8 py-4">
+            <h1 class="glitch-text text-3xl md:text-4xl font-bold mb-3">H4CK3R SECURITY TERMINAL</h1>
+            <p class="text-sm opacity-80">// Security Assessment & Report Generator</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid md:grid-cols-2 gap-5 mb-8">
+            <!-- Input Panel -->
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="text-white font-bold text-sm">TARGET INPUT</span>
+                </div>
+                <div class="terminal-body">
+                    <div class="mb-5">
+                        <label class="block mb-2 text-xs font-bold">TARGET URL/IP:</label>
+                        <input 
+                            type="text" 
+                            id="targetInput"
+                            placeholder="example.com or 192.168.1.1"
+                            class="w-full p-3 text-green-400 font-mono focus:outline-none"
+                        >
+                    </div>
+                    
+                    <div class="mb-5">
+                        <label class="block mb-3 text-xs">SELECT TOOLS:</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" id="phishShieldScan" checked class="form-checkbox text-green-500">
+                                <span class="ml-2">Phish Shield Link Analysis</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="phishTankScan" checked class="form-checkbox text-green-500">
+                                <span class="ml-2">PhishTank Database Lookup</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" id="vulnScan" checked class="form-checkbox text-green-500">
+                                <span class="ml-2">Phishing Risk Assessment</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button onclick="startSecurityScan()" class="hacker-button w-full">
+                        INITIATE SECURITY SCAN
+                    </button>
+                </div>
+            </div>
+
+            <!-- Status Panel -->
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="text-white font-bold text-sm">SECURITY STATUS</span>
+                </div>
+                <div class="terminal-body">
+                    <div id="securityStatus" class="security-status status-warning" style="margin: 0 0 15px 0; padding: 12px; font-size: 0.9em;">
+                        <div class="text-lg mb-1">🔒 SYSTEM READY</div>
+                        <div style="font-size: 0.8em;">AWAITING TARGET INPUT...</div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="text-center p-2 bg-black border border-green-500">
+                            <div class="text-lg font-bold" id="phishDetected">0</div>
+                            <div class="text-xs">PHISHING URLS</div>
+                        </div>
+                        <div class="text-center p-2 bg-black border border-green-500">
+                            <div class="text-lg font-bold" id="suspiciousLinks">0</div>
+                            <div class="text-xs">SUSPICIOUS LINKS</div>
+                        </div>
+                        <div class="text-center p-2 bg-black border border-green-500">
+                            <div class="text-lg font-bold" id="riskLevel">LOW</div>
+                            <div class="text-xs">RISK LEVEL</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-black p-2 border border-green-500 text-xs">
+                        <div class="mb-2">SCAN PROGRESS:</div>
+                        <div class="w-full bg-gray-800 h-3 border border-green-500">
+                            <div id="progressBar" class="h-full bg-green-500 transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Tabs -->
+        <div class="terminal-window mb-8">
+            <div class="terminal-header flex space-x-2">
+                <button class="tab-btn active text-xs py-2 px-3" onclick="switchTab('phishShield', event)">PHISH SHIELD RESULTS</button>
+                <button class="tab-btn text-xs py-2 px-3" onclick="switchTab('phishTank', event)">PHISHTANK DATA</button>
+                <button class="tab-btn text-xs py-2 px-3" onclick="switchTab('vulnerabilities', event)">RISK ASSESSMENT</button>
+            </div>
+            <div class="terminal-body">
+                <!-- Phish Shield Results -->
+                <div id="phishShieldTab" class="tab-content">
+                    <div class="tool-output text-xs">
+                        <span class="text-gray-400"># phish-shield --analyze-links</span>
+                        <br>
+                        <span id="phishShieldOutput">Awaiting scan results...</span>
+                    </div>
+                </div>
+                
+                <!-- PhishTank Results -->
+                <div id="phishTankTab" class="tab-content hidden">
+                    <div class="tool-output text-xs">
+                        <span class="text-gray-400"># phishtank --database-lookup</span>
+                        <br>
+                        <span id="phishTankOutput">Database lookup pending...</span>
+                    </div>
+                </div>
+                
+                <!-- Risk Assessment Results -->
+                <div id="vulnerabilitiesTab" class="tab-content hidden">
+                    <div class="tool-output text-xs">
+                        <span class="text-gray-400"># phishing-risk-assessment --full</span>
+                        <br>
+                        <span id="vulnOutput">Risk assessment pending...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="grid md:grid-cols-2 gap-4 mb-8">
+            <button onclick="exportResults()" class="hacker-button text-sm py-2">
+                EXPORT RESULTS
+            </button>
+            <button onclick="clearScan()" class="hacker-button text-sm py-2">
+                CLEAR SCAN
+            </button>
+
+        </div>
+
+        <!-- Report Download Section -->
+        <div class="terminal-window mb-6">
+            <div class="terminal-header">
+                <span class="text-white font-bold text-sm">REPORT DOWNLOAD</span>
+            </div>
+            <div class="terminal-body">
+                <p class="mb-4 text-xs">View and download the complete scanned report containing all security assessment results from the previous scan, including NMAP scans, Wireshark data, and vulnerability findings.</p>
+                <div id="reportDisplay" class="bg-black p-3 border border-green-500 mb-4 max-h-48 overflow-y-auto hidden">
+                    <pre id="reportContent" class="tool-output text-green-400 text-xs"></pre>
+                </div>
+                <button onclick="generateReport()" class="hacker-button w-full text-sm py-2">
+                    DOWNLOAD SCANNED REPORT
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Matrix Rain Effect
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@%&!?*";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for(let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = `${fontSize}px monospace`;
+            
+            for(let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 33);
+        
+        // Tab Switching
+        function switchTab(tabName, event) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+        
+        // Show Notification
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        // Security Scan Function
+        function startSecurityScan() {
+            const target = document.getElementById('targetInput').value.trim();
+            if (!target) {
+            document.getElementById('suspiciousLinks').textContent = riskVulns;
+            document.getElementById('riskLevel').textContent = status.toUpperCase();
+            
+            showNotification(notificationMsg, status);
+        }
+        
+        function simulatePhishShieldScan(target) {
+            const results = [
+                {url: 'https://example.com/login', status: 'legitimate', trust: '98%'},
+                {url: 'https://secure-bank.com', status: 'legitimate', trust: '95%'},
+                {url: 'https://verify-account-now.com', status: 'malicious', trust: '2%'},
+                {url: 'https://paypal-confirm.net', status: 'phishing', trust: '1%'},
+                {url: 'https://official-service.org', status: 'legitimate', trust: '92%'}
+            ];
+
+            let output = `Phish Shield Link Analysis for ${target}\n\n`;
+            output += 'URL                              STATUS      TRUST SCORE\n';
+            output += '─────────────────────────────────────────────────────────\n';
+
+            results.forEach(r => {
+                output += `${r.url.padEnd(30)} ${r.status.padEnd(11)} ${r.trust}\n`;
+            });
+
+            output += '\nAnalysis complete. Found 2 potential phishing threats.';
+            document.getElementById('phishShieldOutput').textContent = output;
+        }
+        
+        function simulatePhishTankScan(target) {
+            const dbResults = [
+                {entry: 'Database check initiated...', result: 'active'},
+                {entry: 'Checking against 15M+ known phishing URLs', result: 'in_progress'},
+                {entry: 'Cross-referencing threat intelligence feeds', result: 'active'},
+                {entry: 'Target domain found in database', result: 'match'},
+                {entry: 'Phishing submission verified on 2024-12-01', result: 'confirmed'}
+            ];
+
+            let output = `PhishTank Database Lookup for ${target}\n\n`;
+            output += 'DATABASE ENTRY                                 STATUS\n';
+            output += '─────────────────────────────────────────────────────────\n';
+
+            dbResults.forEach(r => {
+                output += `${r.entry.padEnd(42)} [${r.result}]\n`;
+            });
+
+            output += '\nDatabase lookup complete.';
+            document.getElementById('phishTankOutput').textContent = output;
+        }
+        
+        function simulateRiskAssessmentScan(target) {
+            const riskFactors = [
+                {severity: 'HIGH', description: 'Domain registered less than 30 days ago - New domain risk'},
+                {severity: 'MEDIUM', description: 'Missing HTTPS certificate or weak encryption'},
+                {severity: 'HIGH', description: 'Suspicious URL pattern detected - Similar to known phishing'},
+                {severity: 'MEDIUM', description: 'No WHOIS privacy protection - Potential credential leak'},
+                {severity: 'LOW', description: 'Domain reputation score below threshold'}
+            ];
+
+            let output = `Phishing Risk Assessment for ${target}\n\n`;
+            output += 'RISK LEVEL  DESCRIPTION\n';
+            output += '─────────────────────────────────────────────────────────\n';
+
+            riskFactors.forEach(r => {
+                output += `${r.severity.padEnd(10)} ${r.description}\n`;
+            });
+
+            output += '\nRisk assessment complete. Overall risk: MEDIUM';
+            document.getElementById('vulnOutput').textContent = output;
+
+            // Auto-populate the report section after all scans complete
+            setTimeout(() => {
+                displayFullReport(target);
+            }, 500);
+        }
+        
+        function displayFullReport(target) {
+            const phishShield = document.getElementById('phishShieldOutput').textContent || '';
+            const phishTank = document.getElementById('phishTankOutput').textContent || '';
+            const riskAssessment = document.getElementById('vulnOutput').textContent || '';
+
+            let report = `╔═══════════════════════════════════════════════════════════════════════════╗\n`;
+            report += `║     H4CK3R SECURITY TERMINAL - SCAN REPORT                            ║\n`;
+            report += `╚═══════════════════════════════════════════════════════════════════════════╝\n\n`;
+            report += `Target: ${target}\n`;
+            report += `Scan Date: ${new Date().toISOString()}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISH SHIELD LINK ANALYSIS\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${phishShield}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISHTANK DATABASE LOOKUP\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${phishTank}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISHING RISK ASSESSMENT\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${riskAssessment}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `Report Generated: ${new Date().toLocaleString()}\n`;
+
+            // Display the report content in the section
+            const reportContent = document.getElementById('reportContent');
+            const reportDisplay = document.getElementById('reportDisplay');
+            reportContent.textContent = report;
+            reportDisplay.classList.remove('hidden');
+        }
+        
+        function generateReport() {
+            // Collect scan results
+            const target = document.getElementById('targetInput').value.trim();
+
+            if (!target) {
+                showNotification('Please run a scan first!', 'warning');
+                return;
+            }
+
+            const phishShield = document.getElementById('phishShieldOutput').textContent || '';
+            const phishTank = document.getElementById('phishTankOutput').textContent || '';
+            const riskAssessment = document.getElementById('vulnOutput').textContent || '';
+
+            let report = `╔═══════════════════════════════════════════════════════════════════════════╗\n`;
+            report += `║     H4CK3R SECURITY TERMINAL - SCAN REPORT                            ║\n`;
+            report += `╚═══════════════════════════════════════════════════════════════════════════╝\n\n`;
+            report += `Target: ${target}\n`;
+            report += `Scan Date: ${new Date().toISOString()}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISH SHIELD LINK ANALYSIS\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${phishShield}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISHTANK DATABASE LOOKUP\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${phishTank}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `PHISHING RISK ASSESSMENT\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n${riskAssessment}\n\n`;
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `Report Generated: ${new Date().toLocaleString()}\n`;
+
+            // Create a Blob and download
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `security_report_${target}_${new Date().getTime()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showNotification('✓ Security report downloaded successfully!', 'success');
+        }
+        
+        function exportResults() {
+            showNotification('⏳ Exporting scan results to /reports/...', 'warning');
+            setTimeout(() => {
+                showNotification('✓ Results exported successfully!', 'success');
+            }, 1500);
+        }
+        
+        function clearScan() {
+            document.getElementById('targetInput').value = '';
+            document.getElementById('securityStatus').className = 'security-status status-warning';
+            document.getElementById('securityStatus').innerHTML = `
+                <div class="text-lg mb-1">🔒 SYSTEM READY</div>
+                <div style="font-size: 0.8em;">AWAITING TARGET INPUT...</div>
+            `;
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('phishDetected').textContent = '0';
+            document.getElementById('suspiciousLinks').textContent = '0';
+            document.getElementById('riskLevel').textContent = 'LOW';
+            document.getElementById('phishShieldOutput').textContent = 'Awaiting scan results...';
+            document.getElementById('phishTankOutput').textContent = 'Database lookup pending...';
+            document.getElementById('vulnOutput').textContent = 'Risk assessment pending...';
+            document.getElementById('reportDisplay').classList.add('hidden');
+            showNotification('✓ Scan cleared successfully!', 'success');
+        }
+        
+        // Make sure tabs work properly
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ensure first tab is active
+            switchTab('phishShield', {target: document.querySelector('.tab-btn.active')});
+        });
+    </script>
+    <!-- ================= PHISH SHIELD ================== -->
+    <!-- ================= PHISH SHIELD ================== -->
+    <div class="terminal-window mt-10">
+        <div class="terminal-header">
+<div class="terminal-window mt-10">
+    <div class="terminal-header">
+        <span class="text-white font-bold">🛡 PHISH SHIELD – ANTI PHISHING TOOL</span>
+    </div>
+
+    <div class="terminal-body">
+        <p class="mb-4">Paste any suspicious link or message below to check if it is SAFE or PHISHING.</p>
+
+        <input
+            type="text"
+            id="phishInput"
+            placeholder="Enter suspicious link or message..."
+            class="w-full bg-black border border-green-500 p-3 text-green-400 mb-4"
+        />
+
+        <button onclick="checkPhishing()" class="hacker-button w-full mb-4">
+            CHECK LINK SAFETY
+        </button>
+
+        <div id="phishResult" class="security-status status-warning hidden"></div>
+    </div>
+</div>
+
+<!-- Chatbot Widget -->
+<div id="chatbot-widget" class="fixed bottom-4 right-4 z-50">
+    <div id="chatbot-button" class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:bg-green-600 transition-colors">
+        <span class="text-white text-xl">💬</span>
+    </div>
+
+    <div id="chatbot-window" class="hidden absolute bottom-16 right-0 w-80 h-96 bg-black border-2 border-green-500 rounded-lg shadow-xl overflow-hidden">
+        <div class="bg-green-900 p-3 border-b border-green-500">
+            <h3 class="text-white font-bold text-sm">SECURITY ASSISTANT</h3>
+            <span class="text-green-300 text-xs">Ask me about cybersecurity</span>
+        </div>
+
+        <div id="chat-messages" class="flex-1 p-3 h-64 overflow-y-auto bg-gray-900 text-green-400 text-sm font-mono">
+            <div class="mb-2">
+                <span class="text-green-300">Assistant:</span> Hello! I'm your cybersecurity assistant. How can I help you today?
+            </div>
+        </div>
+
+        <div class="p-3 border-t border-green-500 bg-gray-800">
+            <div class="flex">
+                <input
+                    type="text"
+                    id="chat-input"
+                    placeholder="Ask a security question..."
+                    class="flex-1 bg-black border border-green-500 text-green-400 px-3 py-2 text-sm focus:outline-none focus:border-green-400"
+                >
+                <button id="send-chat" class="ml-2 bg-green-500 text-white px-3 py-2 text-sm hover:bg-green-600 transition-colors">
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Chatbot functionality
+    let chatContext = {};
+
+    function toggleChatbot() {
+        const window = document.getElementById('chatbot-window');
+        window.classList.toggle('hidden');
+    }
+
+    function addMessage(message, isUser = false) {
+        const messagesDiv = document.getElementById('chat-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'mb-2';
+        messageDiv.innerHTML = `<span class="${isUser ? 'text-blue-300' : 'text-green-300'}">${isUser ? 'You:' : 'Assistant:'}</span> ${message}`;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    async function sendChatMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        input.value = '';
+
+        try {
+            // Update context with current scan results if available
+            const target = document.getElementById('targetInput').value.trim();
+            if (target) {
+                chatContext = {
+                    nmap: document.getElementById('phishShieldOutput').textContent,
+                    vuln: document.getElementById('vulnOutput').textContent,
+                    target: target
+                };
+            }
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: message,
+                    context: chatContext
+                })
+            });
+
+            const data = await response.json();
+            addMessage(data.reply);
+        } catch (error) {
+            addMessage('Sorry, I\'m having trouble connecting. Please try again later.');
+        }
+    }
+
+    // Event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('chatbot-button').addEventListener('click', toggleChatbot);
+        document.getElementById('send-chat').addEventListener('click', sendChatMessage);
+        document.getElementById('chat-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+
+        // Close chatbot when clicking outside
+        document.addEventListener('click', function(e) {
+            const widget = document.getElementById('chatbot-widget');
+            const window = document.getElementById('chatbot-window');
+            if (!widget.contains(e.target) && !window.classList.contains('hidden')) {
+                window.classList.add('hidden');
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
             --warning: #ff3333;
             --success: #00ff66;
             --info: #0099ff;
@@ -315,6 +1131,7 @@
     </style>
 </head>
 <body>
+    </script>
     <!-- Matrix Rain Background Effect -->
     <canvas id="matrixCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;"></canvas>
 
