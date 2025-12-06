@@ -789,7 +789,7 @@
         <span>💬</span>
     </div>
 
-    <div id="chatbot-window">
+    <div id="chatbot-window" class="hidden">
         <div class="chatbot-header">
             <h3>SECURITY ASSISTANT</h3>
             <p class="subtitle">Ask me about cybersecurity</p>
@@ -881,14 +881,7 @@
             }
         });
 
-        // Close chatbot when clicking outside
-        document.addEventListener('click', function(e) {
-            const widget = document.getElementById('chatbot-widget');
-            const window = document.getElementById('chatbot-window');
-            if (!widget.contains(e.target) && !window.classList.contains('hidden')) {
-                window.classList.add('hidden');
-            }
-        });
+
     });
 </script>
 </body>
