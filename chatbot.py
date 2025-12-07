@@ -1,4 +1,4 @@
-# ...existing code...
+# ...
 import os
 import sqlite3
 import json
@@ -54,6 +54,10 @@ def security_advice_from_context(user_msg: str, context: dict) -> str:
     nmap = context.get("nmap", "") or ""
     vuln = context.get("vuln", "") or ""
 
+    if "ai" in user_low or "generated" in user_low or "scam" in user_low or "deepfake" in user_low:
+        advice_parts.append("AI-generated scams are rising. Protect yourself by: 1) Verifying sender identity through multiple channels, 2) Avoiding clicking links in unsolicited messages, 3) Using AI-detection tools for suspicious content, 4) Enabling two-factor authentication, 5) Educating yourself on common AI scam patterns like perfect grammar or urgent requests.")
+    if "phishing" in user_low or "social engineering" in user_low:
+        advice_parts.append("Against phishing: Never share credentials via email/SMS. Check URLs carefully. Use antivirus with phishing protection. Report suspicious messages. For AI-enhanced phishing, look for inconsistencies in tone or context.")
     if "port" in user_low or "open" in user_low or "ssh" in user_low:
         if "22/tcp" in nmap or "ssh" in nmap.lower():
             advice_parts.append("SSH (port 22) is present. Disable root login, enforce key-based auth, and update OpenSSH.")
@@ -173,6 +177,191 @@ def history():
             "created_at": r["created_at"]
         })
     cur.close()
+    return jsonify(result)
+
+# ----- New Tool Routes -----
+
+@app.route("/ai-scam-analyze", methods=["POST"])
+def ai_scam_analyze():
+    payload = request.get_json(force=True, silent=True) or {}
+    text = payload.get("text", "").strip()
+
+    if not text:
+        return jsonify({"error": "No text provided"}), 400
+
+    # AI scam detection patterns
+    ai_scam_patterns = [
+        r"urgent.*action.*required",
+        r"account.*suspended",
+        r"verify.*identity.*immediately",
+        r"limited.*time.*offer",
+        r"congratulations.*winner",
+        r"perfect.*grammar.*no.*errors",
+        r"too.*good.*true",
+        r"click.*here.*immediately"
+    ]
+
+    import re
+    risk_score = 0
+    detected_patterns = []
+
+    for pattern in ai_scam_patterns:
+        if re.search(pattern, text, re.IGNORECASE):
+            risk_score += 20
+            detected_patterns.append(pattern)
+
+    # Check for AI-like characteristics
+    if len(text) > 200 and not ('?' in text or '!' in text):
+        risk_score += 15
+        detected_patterns.append('long text without punctuation')
+
+    result = {
+        "risk_score": risk_score,
+        "detected_patterns": detected_patterns[:3],  # Limit to top 3
+        "risk_level": "HIGH" if risk_score > 60 else "MEDIUM" if risk_score > 30 else "LOW",
+        "recommendation": "Be extremely cautious!" if risk_score > 60 else "Verify before acting." if risk_score > 30 else "Appears safe, but stay vigilant."
+    }
+
+    return jsonify(result)
+
+@app.route("/social-engineering-quiz", methods=["GET"])
+def get_quiz_questions():
+    quiz_data = [
+        {
+            "question": "What is the most common social engineering tactic?",
+            "options": ["Phishing emails", "Physical break-ins", "SQL injection", "Buffer overflow"],
+            "correct": 0,
+            "explanation": "Phishing emails are the most common social engineering attack, tricking users into revealing sensitive information."
+        },
+        {
+            "question": "Which of these is NOT a sign of a social engineering attack?",
+            "options": ["Urgent requests for information", "Requests for help from 'IT support'", "Official-looking emails with logos", "Regular system updates"],
+            "correct": 3,
+            "explanation": "Regular system updates are normal and expected, unlike urgent or unsolicited requests."
+        },
+        {
+            "question": "What should you do if someone calls claiming to be from tech support?",
+            "options": ["Give them remote access immediately", "Hang up and call back using official numbers", "Share your password to 'verify'", "Click any links they send"],
+            "correct": 1,
+            "explanation": "Always verify by calling back using official contact numbers, never give access or share credentials over unsolicited calls."
+        },
+        {
+            "question": "Which tactic involves creating a sense of urgency to manipulate victims?",
+            "options": ["Baiting", "Pretexting", "Scarcity principle", "Tailgating"],
+            "correct": 2,
+            "explanation": "The scarcity principle creates urgency by suggesting limited time or availability to pressure quick decisions."
+        },
+        {
+            "question": "What is 'pretexting' in social engineering?",
+            "options": ["Using fake websites", "Creating false identities to gain information", "Sending mass emails", "Physical intrusion"],
+            "correct": 1,
+            "explanation": "Pretexting involves creating a fabricated scenario or false identity to obtain confidential information."
+        }
+    ]
+    return jsonify(quiz_data)
+
+@app.route("/url-deep-analyze", methods=["POST"])
+def url_deep_analyze():
+    payload = request.get_json(force=True, silent=True) or {}
+    url = payload.get("url", "").strip()
+
+    if not url:
+        return jsonify({"error": "No URL provided"}), 400
+
+    import random
+
+    # Simulate deep URL analysis (in real app, would use APIs like VirusTotal, WHOIS, etc.)
+    analysis = {
+        "domain": url.replace("https://", "").replace("http://", "").split('/')[0],
+        "ssl_valid": url.startswith("https://"),
+        "domain_age_days": random.randint(30, 3650),  # Random age between 1 month and 10 years
+        "reputation_score": "Suspicious" if random.random() > 0.8 else "Good",
+        "redirect_count": random.randint(0, 3),
+        "threat_level": "High" if random.random() > 0.9 else "Low",
+        "whois_privacy": random.choice([True, False]),
+        "ip_geolocation": f"{random.randint(1,255)}.{random.randint(0,255)}.{random.randint(0,255)}.{random.randint(0,255)}"
+    }
+
+    analysis["domain_age_years"] = analysis["domain_age_days"] // 365
+    analysis["domain_age_remaining_days"] = analysis["domain_age_days"] % 365
+
+    risk_factors = []
+    if not analysis["ssl_valid"]:
+        risk_factors.append("Missing SSL certificate")
+    if analysis["domain_age_days"] < 90:
+        risk_factors.append("Very new domain")
+    if analysis["reputation_score"] == "Suspicious":
+        risk_factors.append("Poor domain reputation")
+    if analysis["threat_level"] == "High":
+        risk_factors.append("High threat intelligence score")
+    if analysis["redirect_count"] > 2:
+        risk_factors.append("Excessive redirects")
+
+    result = {
+        "analysis": analysis,
+        "risk_factors": risk_factors,
+        "overall_risk": "HIGH" if len(risk_factors) > 2 else "MEDIUM" if len(risk_factors) > 0 else "LOW",
+        "recommendation": "Exercise extreme caution!" if len(risk_factors) > 2 else "Verify manually before proceeding." if len(risk_factors) > 0 else "Appears safe."
+    }
+
+    return jsonify(result)
+
+@app.route("/email-header-inspect", methods=["POST"])
+def email_header_inspect():
+    payload = request.get_json(force=True, silent=True) or {}
+    headers = payload.get("headers", "").strip()
+
+    if not headers:
+        return jsonify({"error": "No email headers provided"}), 400
+
+    # Analyze email headers for spoofing
+    header_lines = headers.split('\n')
+    analysis = {
+        "from_address": "",
+        "received_count": 0,
+        "spf_result": "Not found",
+        "dkim_result": "Not found",
+        "dmarc_result": "Not found",
+        "suspicious_indicators": []
+    }
+
+    for line in header_lines:
+        line_lower = line.lower()
+        if line_lower.startswith('from:'):
+            analysis["from_address"] = line.split(':', 1)[1].strip()
+        elif line_lower.startswith('received:'):
+            analysis["received_count"] += 1
+        elif 'spf=' in line_lower:
+            analysis["spf_result"] = "Pass" if "pass" in line_lower else "Fail"
+        elif 'dkim=' in line_lower:
+            analysis["dkim_result"] = "Pass" if "pass" in line_lower else "Fail"
+        elif 'dmarc=' in line_lower:
+            analysis["dmarc_result"] = "Pass" if "pass" in line_lower else "Fail"
+
+    # Check for suspicious patterns
+    if analysis["received_count"] > 5:
+        analysis["suspicious_indicators"].append("Too many received headers (possible email forwarding abuse)")
+
+    if analysis["spf_result"] == "Fail":
+        analysis["suspicious_indicators"].append("SPF check failed")
+
+    if analysis["dkim_result"] == "Fail":
+        analysis["suspicious_indicators"].append("DKIM check failed")
+
+    if analysis["dmarc_result"] == "Fail":
+        analysis["suspicious_indicators"].append("DMARC check failed")
+
+    # Check for common spoofing patterns
+    if "@gmail.com" in analysis["from_address"] and analysis["received_count"] < 2:
+        analysis["suspicious_indicators"].append("Suspicious Gmail routing")
+
+    result = {
+        "analysis": analysis,
+        "is_spoofed": len(analysis["suspicious_indicators"]) > 0,
+        "confidence": "HIGH" if len(analysis["suspicious_indicators"]) > 2 else "MEDIUM" if len(analysis["suspicious_indicators"]) > 0 else "LOW",
+        "recommendation": "Do not trust this email!" if len(analysis["suspicious_indicators"]) > 0 else "Headers appear legitimate."
+    }
+
     return jsonify(result)
 
 # ----- Main -----

@@ -498,31 +498,42 @@ body {
 .text-gray-400 {
     color: #9ca3af;
 }
+/* Fixed Header Styling */
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+}
+
 /* Enhanced Search Bar Styling */
-#targetInput {
+#targetInput, #fullScanInput, #phishInput, #aiScamInput, #urlDeepDiveInput, #emailHeaderInput {
     background: linear-gradient(45deg, rgba(0, 20, 0, 0.9), rgba(0, 0, 0, 0.9));
     border: 2px solid #00ff00;
     box-shadow: 0 0 15px rgba(0, 255, 0, 0.4), inset 0 0 10px rgba(0, 255, 0, 0.1);
     font-family: 'Roboto Mono', monospace;
     font-weight: bold;
     color: #00ff00;
-    padding: 12px 16px;
+    padding: 8px 12px;
     border-radius: 0;
     position: relative;
     transition: all 0.3s ease;
+    width: 100%;
+    max-width: 350px;
 }
 
-#targetInput::placeholder {
+#targetInput::placeholder, #fullScanInput::placeholder, #phishInput::placeholder, #aiScamInput::placeholder, #urlDeepDiveInput::placeholder, #emailHeaderInput::placeholder {
     color: rgba(0, 255, 0, 0.5);
 }
 
-#targetInput:focus {
+#targetInput:focus, #fullScanInput:focus, #phishInput:focus, #aiScamInput:focus, #urlDeepDiveInput:focus, #emailHeaderInput:focus {
     outline: none;
     border-color: #00ffff;
     box-shadow: 0 0 25px rgba(0, 255, 0, 0.6), inset 0 0 15px rgba(0, 255, 0, 0.2);
 }
 
-#targetInput:hover {
+#targetInput:hover, #fullScanInput:hover, #phishInput:hover, #aiScamInput:hover, #urlDeepDiveInput:hover, #emailHeaderInput:hover {
     box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), inset 0 0 12px rgba(0, 255, 0, 0.15);
 }
 
@@ -573,6 +584,27 @@ body {
 .mt-10 { margin-top: 2.5rem; }
 .text-blue-300 { color: #90cdf4; }
 .text-green-300 { color: #9ae6b4; }
+
+/* Quiz Options Styling */
+#quizOptions button {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(45deg, rgba(0, 40, 0, 0.8), rgba(0, 60, 0, 0.8));
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    font-family: 'Roboto Mono', monospace;
+    font-weight: bold;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#quizOptions button:hover {
+    background: linear-gradient(45deg, rgba(0, 60, 0, 0.9), rgba(0, 80, 0, 0.9));
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
 
 /* Chatbot styles */
 #chatbot-widget {
