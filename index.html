@@ -3,303 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>H4CK3R Security Terminal</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="chatbot.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-        
-        :root {
-            --terminal-bg: #0a0a0a;
-            --terminal-text: #00ff00;
-            --terminal-border: #00ff00;
-            --hacker-accent: #ff0080;
-            --warning: #ff3333;
-            --success: #00ff66;
-            --info: #0099ff;
-        }
-        
-        body {
-            background: linear-gradient(45deg, #000000, #0a0a0a, #001a00);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: var(--terminal-text);
-            font-family: 'Share Tech Mono', monospace;
-            min-height: 100vh;
-            margin: 0;
-            padding: 8px;
-            overflow-x: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .glitch-text {
-            text-shadow: 2px 2px 0 var(--hacker-accent), -2px -2px 0 #00ffff;
-            animation: glitch 1s infinite;
-        }
-        
-        @keyframes glitch {
-            0% { text-shadow: 2px 2px 0 var(--hacker-accent), -2px -2px 0 #00ffff; }
-            50% { text-shadow: -2px -2px 0 var(--hacker-accent), 2px 2px 0 #00ffff; }
-            100% { text-shadow: 2px 2px 0 var(--hacker-accent), -2px -2px 0 #00ffff; }
-        }
-        
-        .terminal-window {
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid var(--terminal-border);
-            border-radius: 5px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .terminal-header {
-            background: linear-gradient(90deg, #004400, #007700);
-            padding: 10px;
-            border-bottom: 1px solid var(--terminal-border);
-        }
-        
-        .terminal-body {
-            padding: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-            background: rgba(0, 20, 0, 0.3);
-        }
-        
-        .cursor-blink {
-            display: inline-block;
-            width: 8px;
-            height: 16px;
-            background: var(--terminal-text);
-            animation: blink 1s infinite;
-        }
-        
-        @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-        
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--hacker-accent), transparent);
-            animation: scan 2s linear infinite;
-        }
-        
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
-        
-        .hacker-button {
-            background: linear-gradient(45deg, #004400, #007700);
-            border: 1px solid var(--terminal-border);
-            color: var(--terminal-text);
-            padding: 12px 24px;
-            font-family: 'Share Tech Mono', monospace;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hacker-button:hover {
-            background: linear-gradient(45deg, #007700, #00aa00);
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-            transform: translateY(-2px);
-        }
-        
-        .hacker-button:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: 0.5s;
-        }
-        
-        .hacker-button:hover:before {
-            left: 100%;
-        }
-        
-        .security-status {
-            border: 2px solid;
-            padding: 20px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 1.2em;
-            margin: 20px 0;
-            text-shadow: 0 0 10px currentColor;
-            position: relative;
-        }
-
-        .security-status::after {
-            content: '_';
-            position: absolute;
-            bottom: 10px;
-            right: 20px;
-            color: var(--terminal-text);
-            animation: blink 1s infinite;
-        }
-        
-        .status-secure {
-            border-color: var(--success);
-            color: var(--success);
-            background: rgba(0, 255, 102, 0.1);
-        }
-        
-        .status-warning {
-            border-color: var(--warning);
-            color: var(--warning);
-            background: rgba(255, 51, 51, 0.1);
-        }
-        
-        .status-critical {
-            border-color: var(--hacker-accent);
-            color: var(--hacker-accent);
-            background: rgba(255, 0, 128, 0.1);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 128, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(255, 0, 128, 0.6); }
-        }
-        
-        .tool-output {
-            font-family: 'Share Tech Mono', monospace;
-            white-space: pre-wrap;
-            line-height: 1.4;
-        }
-        
-        .port-open { color: var(--success); }
-        .port-filtered { color: var(--warning); }
-        .port-closed { color: var(--info); }
-        
-        .notification {
-            position: fixed;
-            top: 30px;
-            right: 30px;
-            padding: 16px 24px;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            z-index: 1000;
-            animation: slideIn 0.5s ease, slideOut 0.5s ease 4.5s forwards;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            border-left: 4px solid;
-            max-width: 400px;
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(400px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(400px); opacity: 0; }
-        }
-        
-        .notification.success {
-            background: rgba(0, 255, 102, 0.15);
-            border-left-color: var(--success);
-            color: var(--success);
-        }
-        
-        .notification.warning {
-            background: rgba(255, 51, 51, 0.15);
-            border-left-color: var(--warning);
-            color: var(--warning);
-        }
-        
-        .notification.critical {
-            background: rgba(255, 0, 128, 0.15);
-            border-left-color: var(--hacker-accent);
-            color: var(--hacker-accent);
-        }
-        
-        .tab-btn {
-            background: #004400;
-            border: 1px solid var(--terminal-border);
-            color: var(--terminal-text);
-            padding: 8px 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .tab-btn.active {
-            background: #007700;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-        
-        .tab-btn:hover {
-            background: #00aa00;
-        }
-        
-        .tab-content {
-            display: block;
-        }
-        
-        .hidden {
-            display: none;
-        }
-
-        /* Enhanced Search Bar Styling */
-        #targetInput {
-            background: linear-gradient(45deg, rgba(0, 20, 0, 0.9), rgba(0, 0, 0, 0.9));
-            border: 2px solid #00ff00;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4), inset 0 0 10px rgba(0, 255, 0, 0.1);
-            font-family: 'Share Tech Mono', monospace;
-            color: #00ff00;
-            padding: 12px 16px;
-            border-radius: 0;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        #targetInput::placeholder {
-            color: rgba(0, 255, 0, 0.5);
-        }
-
-        #targetInput:focus {
-            outline: none;
-            border-color: #00ffff;
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.6), inset 0 0 15px rgba(0, 255, 0, 0.2);
-        }
-
-        #targetInput:hover {
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5), inset 0 0 12px rgba(0, 255, 0, 0.15);
-        }
-    </style>
 </head>
 <body>
+
+
     <!-- Matrix Rain Background Effect -->
     <canvas id="matrixCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;"></canvas>
 
-    <div class="container mx-auto max-w-5xl" style="width: 100%; max-width: 1000px;">
-        <!-- Header -->
-        <header class="text-center mb-8 py-4">
-            <h1 class="glitch-text text-3xl md:text-4xl font-bold mb-3">H4CK3R SECURITY TERMINAL</h1>
-            <p class="text-sm opacity-80">// Security Assessment & Report Generator</p>
-        </header>
-
+    <div class="container mx-auto max-w-5xl" style="width: 100%; max-width: 1000px; margin: 0 auto; text-align: center;">
         <!-- Main Content -->
         <div class="grid md:grid-cols-2 gap-5 mb-8">
             <!-- Input Panel -->
@@ -426,6 +143,25 @@
 
         </div>
 
+        <!-- Full Comprehensive Scan Section -->
+        <div class="terminal-window mb-6">
+            <div class="terminal-header">
+                <span class="text-white font-bold text-sm">FULL COMPREHENSIVE SCAN</span>
+            </div>
+            <div class="terminal-body">
+                <p class="mb-4 text-xs">Enter any URL, text, or email headers below to perform a full scan across all security tools and generate a consolidated report.</p>
+                <input
+                    type="text"
+                    id="fullScanInput"
+                    placeholder="Enter URL, suspicious text, or email headers..."
+                    class="w-full p-3 text-green-400 font-mono focus:outline-none mb-4"
+                >
+                <button onclick="initiateFullScan()" class="hacker-button w-full text-sm py-2">
+                    INITIATE FULL SCAN
+                </button>
+            </div>
+        </div>
+
         <!-- Report Download Section -->
         <div class="terminal-window mb-6">
             <div class="terminal-header">
@@ -439,6 +175,124 @@
                 <button onclick="generateReport()" class="hacker-button w-full text-sm py-2">
                     DOWNLOAD SCANNED REPORT
                 </button>
+            </div>
+        </div>
+
+        <!-- Security Tools Grid -->
+        <div class="grid md:grid-cols-2 gap-5 mb-8">
+            <!-- ================= PHISH SHIELD ================== -->
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="text-white font-bold">🛡 PHISH SHIELD – ANTI PHISHING TOOL</span>
+                </div>
+
+                <div class="terminal-body">
+                    <p class="mb-4">Paste any suspicious link or message below to check if it is SAFE or PHISHING.</p>
+
+                    <input
+                        type="text"
+                        id="phishInput"
+                        placeholder="Enter suspicious link or message..."
+                        class="w-full bg-black border border-green-500 p-3 text-green-400 mb-4"
+                    />
+
+                    <button onclick="checkPhishing()" class="hacker-button w-full mb-4">
+                        CHECK LINK SAFETY
+                    </button>
+
+                    <div id="phishResult" class="security-status status-warning hidden"></div>
+                </div>
+            </div>
+
+            <!-- ================= AI SCAM TEXT ANALYZER ================== -->
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="text-white font-bold">🤖 AI SCAM TEXT ANALYZER</span>
+                </div>
+
+                <div class="terminal-body">
+                    <p class="mb-4">Paste suspicious text or messages to analyze for AI-generated scam patterns.</p>
+
+                    <textarea
+                        id="aiScamInput"
+                        placeholder="Paste suspicious text here..."
+                        class="w-full bg-black border border-green-500 p-3 text-green-400 mb-4 h-24 resize-none"
+                    ></textarea>
+
+                    <button onclick="analyzeAIScam()" class="hacker-button w-full mb-4">
+                        ANALYZE FOR AI SCAMS
+                    </button>
+
+                    <div id="aiScamResult" class="security-status status-warning hidden"></div>
+                </div>
+            </div>
+
+            <!-- ================= SOCIAL ENGINEERING QUIZ ================== -->
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="text-white font-bold">🎯 SOCIAL ENGINEERING AWARENESS QUIZ</span>
+                </div>
+
+                <div class="terminal-body">
+                    <p class="mb-4">Test your knowledge of social engineering tactics and learn how to spot them.</p>
+
+                    <div id="quizContainer">
+                        <div id="quizQuestion" class="mb-4 text-green-400"></div>
+                        <div id="quizOptions" class="space-y-2 mb-4"></div>
+                        <button onclick="nextQuizQuestion()" class="hacker-button w-full mb-4" id="quizButton">
+                            START QUIZ
+                        </button>
+                    </div>
+
+                    <div id="quizResult" class="security-status status-warning hidden"></div>
+                </div>
+            </div>
+
+            <!-- ================= URL DEEP DIVE ANALYZER ================== -->
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <span class="text-white font-bold">🔍 URL DEEP DIVE ANALYZER</span>
+                </div>
+
+                <div class="terminal-body">
+                    <p class="mb-4">Perform advanced URL inspection including domain age, SSL details, and threat intelligence.</p>
+
+                    <input
+                        type="text"
+                        id="urlDeepDiveInput"
+                        placeholder="Enter URL to analyze..."
+                        class="w-full bg-black border border-green-500 p-3 text-green-400 mb-4"
+                    />
+
+                    <button onclick="analyzeURLDeep()" class="hacker-button w-full mb-4">
+                        DEEP ANALYZE URL
+                    </button>
+
+                    <div id="urlDeepDiveResult" class="security-status status-warning hidden"></div>
+                </div>
+            </div>
+
+            <!-- ================= EMAIL HEADER INSPECTOR ================== -->
+            <div class="terminal-window md:col-span-2">
+                <div class="terminal-header">
+                    <span class="text-white font-bold">📧 EMAIL HEADER INSPECTOR</span>
+                </div>
+
+                <div class="terminal-body">
+                    <p class="mb-4">Paste email headers to analyze for spoofing signs and authenticity.</p>
+
+                    <textarea
+                        id="emailHeaderInput"
+                        placeholder="Paste email headers here..."
+                        class="w-full bg-black border border-green-500 p-3 text-green-400 mb-4 h-32 resize-none"
+                    ></textarea>
+
+                    <button onclick="inspectEmailHeaders()" class="hacker-button w-full mb-4">
+                        INSPECT HEADERS
+                    </button>
+
+                    <div id="emailHeaderResult" class="security-status status-warning hidden"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -507,7 +361,7 @@
             }, 5000);
         }
     
-        function simulatePhishShieldScan(target) {
+        function simulatePhishShieldScan(target, isFullScan = false) {
             const results = [
                 {url: 'https://example.com/login', status: 'legitimate', trust: '98%'},
                 {url: 'https://secure-bank.com', status: 'legitimate', trust: '95%'},
@@ -525,10 +379,15 @@
             });
 
             output += '\nAnalysis complete. Found 2 potential phishing threats.';
-            document.getElementById('phishShieldOutput').textContent = output;
+
+            if (isFullScan) {
+                fullScanResults.phishShield = output;
+            } else {
+                document.getElementById('phishShieldOutput').textContent = output;
+            }
         }
         
-        function simulatePhishTankScan(target) {
+        function simulatePhishTankScan(target, isFullScan = false) {
             const dbResults = [
                 {entry: 'Database check initiated...', result: 'active'},
                 {entry: 'Checking against 15M+ known phishing URLs', result: 'in_progress'},
@@ -546,7 +405,12 @@
             });
 
             output += '\nDatabase lookup complete.';
-            document.getElementById('phishTankOutput').textContent = output;
+
+            if (isFullScan) {
+                fullScanResults.phishTank = output;
+            } else {
+                document.getElementById('phishTankOutput').textContent = output;
+            }
         }
         
         function simulateRiskAssessmentScan(target) {
@@ -671,7 +535,126 @@
             document.getElementById('phishTankOutput').textContent = 'Database lookup pending...';
             document.getElementById('vulnOutput').textContent = 'Risk assessment pending...';
             document.getElementById('reportDisplay').classList.add('hidden');
+            // Clear Phish Shield section
+            document.getElementById('phishInput').value = '';
+            document.getElementById('phishResult').classList.add('hidden');
             showNotification('✓ Scan cleared successfully!', 'success');
+        }
+
+        // Full Scan Results Global Object
+        let fullScanResults = {};
+
+        // Initiate Full Comprehensive Scan
+        async function initiateFullScan() {
+            const input = document.getElementById('fullScanInput').value.trim();
+            if (!input) {
+                showNotification('Please enter something to scan!', 'warning');
+                return;
+            }
+
+            fullScanResults = {}; // reset
+
+            // Determine type
+            let isURL = input.startsWith('http') || input.includes('.com') || input.includes('.org') || input.includes('.net') || input.includes('.edu') || input.includes('.gov');
+            let isEmailHeaders = input.includes('From:') || input.includes('Received:') || input.includes('Subject:') || input.includes('Date:');
+
+            // Update status
+            document.getElementById('securityStatus').className = 'security-status status-secure';
+            document.getElementById('securityStatus').innerHTML = `
+                <div class="text-lg mb-1">🔍 FULL SCANNING...</div>
+                <div style="font-size: 0.8em;">ANALYZING ALL TOOLS...</div>
+            `;
+
+            // Run scans
+            if (isURL) {
+                // Run main security scan
+                simulatePhishShieldScan(input, true);
+                await new Promise(r => setTimeout(r, 1000));
+                simulatePhishTankScan(input, true);
+                await new Promise(r => setTimeout(r, 1000));
+                simulateRiskAssessmentScan(input, true);
+                await new Promise(r => setTimeout(r, 1000));
+                // Run URL deep dive
+                analyzeURLDeep(input, true);
+                await new Promise(r => setTimeout(r, 1000));
+                // Run Phish Shield link check
+                checkPhishing(input, true);
+                await new Promise(r => setTimeout(r, 1000));
+            } else if (isEmailHeaders) {
+                // Run email header inspection
+                await inspectEmailHeaders(input, true);
+                await new Promise(r => setTimeout(r, 1000));
+            } else {
+                // Treat as text, run AI scam
+                await analyzeAIScam(input, true);
+                await new Promise(r => setTimeout(r, 1000));
+            }
+
+            // Generate full report
+            displayFullScanReport(input);
+
+            // Update status
+            document.getElementById('securityStatus').className = 'security-status status-secure';
+            document.getElementById('securityStatus').innerHTML = `
+                <div class="text-lg mb-1">✅ FULL SCAN COMPLETE</div>
+                <div style="font-size: 0.8em;">ALL RESULTS READY</div>
+            `;
+
+            showNotification('✓ Full comprehensive scan completed!', 'success');
+        }
+
+        // Display Full Scan Report
+        function displayFullScanReport(input) {
+            let report = `╔═══════════════════════════════════════════════════════════════════════════╗\n`;
+            report += `║     H4CK3R SECURITY TERMINAL - FULL COMPREHENSIVE SCAN REPORT         ║\n`;
+            report += `╚═══════════════════════════════════════════════════════════════════════════╝\n\n`;
+            report += `Input: ${input}\n`;
+            report += `Scan Date: ${new Date().toISOString()}\n\n`;
+
+            if (fullScanResults.phishShield) {
+                report += `═════════════════════════════════════════════════════════════════════════════\n`;
+                report += `PHISH SHIELD LINK ANALYSIS\n`;
+                report += `═════════════════════════════════════════════════════════════════════════════\n${fullScanResults.phishShield}\n\n`;
+            }
+            if (fullScanResults.phishTank) {
+                report += `═════════════════════════════════════════════════════════════════════════════\n`;
+                report += `PHISHTANK DATABASE LOOKUP\n`;
+                report += `═════════════════════════════════════════════════════════════════════════════\n${fullScanResults.phishTank}\n\n`;
+            }
+            if (fullScanResults.riskAssessment) {
+                report += `═════════════════════════════════════════════════════════════════════════════\n`;
+                report += `PHISHING RISK ASSESSMENT\n`;
+                report += `═════════════════════════════════════════════════════════════════════════════\n${fullScanResults.riskAssessment}\n\n`;
+            }
+            if (fullScanResults.urlDeepDive) {
+                report += `═════════════════════════════════════════════════════════════════════════════\n`;
+                report += `URL DEEP DIVE ANALYSIS\n`;
+                report += `═════════════════════════════════════════════════════════════════════════════\n${fullScanResults.urlDeepDive}\n\n`;
+            }
+            if (fullScanResults.phishShieldLink) {
+                report += `═════════════════════════════════════════════════════════════════════════════\n`;
+                report += `PHISH SHIELD LINK CHECK\n`;
+                report += `═════════════════════════════════════════════════════════════════════════════\n${fullScanResults.phishShieldLink}\n\n`;
+            }
+            if (fullScanResults.aiScam) {
+                report += `═════════════════════════════════════════════════════════════════════════════\n`;
+                report += `AI SCAM TEXT ANALYSIS\n`;
+                report += `═════════════════════════════════════════════════════════════════════════════\n${fullScanResults.aiScam}\n\n`;
+            }
+            if (fullScanResults.emailHeader) {
+                report += `═════════════════════════════════════════════════════════════════════════════\n`;
+                report += `EMAIL HEADER INSPECTION\n`;
+                report += `═════════════════════════════════════════════════════════════════════════════\n${fullScanResults.emailHeader}\n\n`;
+            }
+
+            report += `═════════════════════════════════════════════════════════════════════════════\n`;
+            report += `Report Generated: ${new Date().toLocaleString()}\n`;
+
+            // Display the report content in the section
+            const reportContent = document.getElementById('reportContent');
+            const reportDisplay = document.getElementById('reportDisplay');
+            reportContent.textContent = report;
+            reportDisplay.classList.remove('hidden');
         }
         
         function startSecurityScan() {
@@ -753,35 +736,271 @@
             }
         }
 
+        async function analyzeAIScam() {
+            const input = document.getElementById('aiScamInput').value.trim();
+            const resultDiv = document.getElementById('aiScamResult');
+
+            if (!input) {
+                showNotification('Please enter text to analyze!', 'warning');
+                return;
+            }
+
+            resultDiv.classList.remove('hidden');
+            resultDiv.className = 'security-status status-warning';
+            resultDiv.innerHTML = '<div class="text-lg mb-1">🔍 ANALYZING...</div><div style="font-size: 0.8em;">Checking for AI scam patterns...</div>';
+
+            try {
+                const response = await fetch('/ai-scam-analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: input })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showNotification(data.error, 'warning');
+                    resultDiv.classList.add('hidden');
+                    return;
+                }
+
+                if (data.risk_level === 'HIGH') {
+                    resultDiv.className = 'security-status status-critical';
+                    resultDiv.innerHTML = `
+                        <div class="text-lg mb-1">🚨 HIGH AI SCAM RISK</div>
+                        <div style="font-size: 0.8em;">Risk Score: ${data.risk_score}%. Detected patterns: ${data.detected_patterns.join(', ')}. ${data.recommendation}</div>
+                    `;
+                } else if (data.risk_level === 'MEDIUM') {
+                    resultDiv.className = 'security-status status-warning';
+                    resultDiv.innerHTML = `
+                        <div class="text-lg mb-1">⚠️ MEDIUM AI SCAM RISK</div>
+                        <div style="font-size: 0.8em;">Risk Score: ${data.risk_score}%. Some suspicious patterns detected. ${data.recommendation}</div>
+                    `;
+                } else {
+                    resultDiv.className = 'security-status status-secure';
+                    resultDiv.innerHTML = `
+                        <div class="text-lg mb-1">✅ LOW AI SCAM RISK</div>
+                        <div style="font-size: 0.8em;">Risk Score: ${data.risk_score}%. No major AI scam patterns detected, but stay vigilant.</div>
+                    `;
+                }
+            } catch (error) {
+                showNotification('Error analyzing text. Please try again.', 'warning');
+                resultDiv.classList.add('hidden');
+            }
+        }
+
+        // Social Engineering Quiz
+        const quizQuestions = [
+            {
+                question: "What is the most common social engineering tactic?",
+                options: ["Phishing emails", "Physical break-ins", "SQL injection", "Buffer overflow"],
+                correct: 0,
+                explanation: "Phishing emails are the most common social engineering attack, tricking users into revealing sensitive information."
+            },
+            {
+                question: "Which of these is NOT a sign of a social engineering attack?",
+                options: ["Urgent requests for information", "Requests for help from 'IT support'", "Official-looking emails with logos", "Regular system updates"],
+                correct: 3,
+                explanation: "Regular system updates are normal and expected, unlike urgent or unsolicited requests."
+            },
+            {
+                question: "What should you do if someone calls claiming to be from tech support?",
+                options: ["Give them remote access immediately", "Hang up and call back using official numbers", "Share your password to 'verify'", "Click any links they send"],
+                correct: 1,
+                explanation: "Always verify by calling back using official contact numbers, never give access or share credentials over unsolicited calls."
+            },
+            {
+                question: "Which tactic involves creating a sense of urgency to manipulate victims?",
+                options: ["Baiting", "Pretexting", "Scarcity principle", "Tailgating"],
+                correct: 2,
+                explanation: "The scarcity principle creates urgency by suggesting limited time or availability to pressure quick decisions."
+            },
+            {
+                question: "What is 'pretexting' in social engineering?",
+                options: ["Using fake websites", "Creating false identities to gain information", "Sending mass emails", "Physical intrusion"],
+                correct: 1,
+                explanation: "Pretexting involves creating a fabricated scenario or false identity to obtain confidential information."
+            }
+        ];
+
+        let currentQuizQuestion = 0;
+        let quizScore = 0;
+
+        function nextQuizQuestion() {
+            const questionDiv = document.getElementById('quizQuestion');
+            const optionsDiv = document.getElementById('quizOptions');
+            const button = document.getElementById('quizButton');
+            const resultDiv = document.getElementById('quizResult');
+
+            if (currentQuizQuestion >= quizQuestions.length) {
+                // Quiz complete
+                resultDiv.classList.remove('hidden');
+                const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+                if (percentage >= 80) {
+                    resultDiv.className = 'security-status status-secure';
+                    resultDiv.innerHTML = `
+                        <div class="text-lg mb-1">🎉 EXCELLENT!</div>
+                        <div style="font-size: 0.8em;">You scored ${quizScore}/${quizQuestions.length} (${percentage}%). You're well-prepared against social engineering!</div>
+                    `;
+                } else if (percentage >= 60) {
+                    resultDiv.className = 'security-status status-warning';
+                    resultDiv.innerHTML = `
+                        <div class="text-lg mb-1">👍 GOOD JOB</div>
+                        <div style="font-size: 0.8em;">You scored ${quizScore}/${quizQuestions.length} (${percentage}%). Review the explanations to improve further.</div>
+                    `;
+                } else {
+                    resultDiv.className = 'security-status status-critical';
+                    resultDiv.innerHTML = `
+                        <div class="text-lg mb-1">📚 NEEDS IMPROVEMENT</div>
+                        <div style="font-size: 0.8em;">You scored ${quizScore}/${quizQuestions.length} (${percentage}%). Study social engineering tactics more carefully.</div>
+                    `;
+                }
+                button.textContent = 'RESTART QUIZ';
+                button.onclick = () => { currentQuizQuestion = 0; quizScore = 0; nextQuizQuestion(); };
+                return;
+            }
+
+            const question = quizQuestions[currentQuizQuestion];
+            questionDiv.textContent = question.question;
+
+            optionsDiv.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'w-full text-left p-2 bg-black border border-green-500 hover:bg-green-900 mb-2';
+                button.textContent = option;
+                button.onclick = () => {
+                    if (index === question.correct) {
+                        quizScore++;
+                        showNotification('✓ Correct!', 'success');
+                    } else {
+                        showNotification('✗ Incorrect. ' + question.explanation, 'warning');
+                    }
+                    currentQuizQuestion++;
+                    setTimeout(nextQuizQuestion, 1500);
+                };
+                optionsDiv.appendChild(button);
+            });
+
+            button.textContent = 'NEXT QUESTION';
+        }
+
+        function analyzeURLDeep() {
+            const input = document.getElementById('urlDeepDiveInput').value.trim();
+            const resultDiv = document.getElementById('urlDeepDiveResult');
+
+            if (!input) {
+                showNotification('Please enter a URL to analyze!', 'warning');
+                return;
+            }
+
+            resultDiv.classList.remove('hidden');
+
+            // Simulate deep URL analysis
+            const analysis = {
+                domain: input.replace(/^https?:\/\//, '').split('/')[0],
+                ssl: input.startsWith('https://') ? 'Valid' : 'Missing',
+                age: Math.floor(Math.random() * 3650) + 30, // Random age in days
+                reputation: Math.random() > 0.8 ? 'Suspicious' : 'Good',
+                redirects: Math.floor(Math.random() * 3),
+                threats: Math.random() > 0.9 ? 'High' : 'Low'
+            };
+
+            let output = `Deep URL Analysis for ${input}\n\n`;
+            output += `Domain: ${analysis.domain}\n`;
+            output += `SSL Certificate: ${analysis.ssl}\n`;
+            output += `Domain Age: ${Math.floor(analysis.age / 365)} years, ${analysis.age % 365} days\n`;
+            output += `Reputation Score: ${analysis.reputation}\n`;
+            output += `Redirect Chain: ${analysis.redirects} redirects\n`;
+            output += `Threat Level: ${analysis.threats}\n\n`;
+
+            if (analysis.threats === 'High' || analysis.ssl === 'Missing' || analysis.reputation === 'Suspicious') {
+                resultDiv.className = 'security-status status-critical';
+                output += '⚠️ HIGH RISK: This URL shows suspicious characteristics. Exercise extreme caution!';
+            } else {
+                resultDiv.className = 'security-status status-secure';
+                output += '✅ APPEARS SAFE: No major red flags detected, but always verify manually.';
+            }
+
+            resultDiv.innerHTML = `
+                <div class="text-lg mb-1">${analysis.threats === 'High' ? '🚨' : '✅'} URL ANALYSIS COMPLETE</div>
+                <div style="font-size: 0.8em;"><pre>${output}</pre></div>
+            `;
+        }
+
+        function inspectEmailHeaders() {
+            const input = document.getElementById('emailHeaderInput').value.trim();
+            const resultDiv = document.getElementById('emailHeaderResult');
+
+            if (!input) {
+                showNotification('Please paste email headers to inspect!', 'warning');
+                return;
+            }
+
+            resultDiv.classList.remove('hidden');
+
+            // Analyze email headers for spoofing
+            const headers = input.split('\n');
+            let analysis = {
+                from: '',
+                received: [],
+                spf: 'Not found',
+                dkim: 'Not found',
+                dmarc: 'Not found',
+                suspicious: false
+            };
+
+            headers.forEach(header => {
+                const lower = header.toLowerCase();
+                if (lower.startsWith('from:')) {
+                    analysis.from = header.split(':')[1].trim();
+                } else if (lower.startsWith('received:')) {
+                    analysis.received.push(header);
+                } else if (lower.includes('spf=')) {
+                    analysis.spf = header.includes('pass') ? 'Pass' : 'Fail';
+                } else if (lower.includes('dkim=')) {
+                    analysis.dkim = header.includes('pass') ? 'Pass' : 'Fail';
+                } else if (lower.includes('dmarc=')) {
+                    analysis.dmarc = header.includes('pass') ? 'Pass' : 'Fail';
+                }
+            });
+
+            // Check for suspicious patterns
+            if (analysis.received.length > 5) {
+                analysis.suspicious = true;
+            }
+            if (analysis.spf === 'Fail' || analysis.dkim === 'Fail' || analysis.dmarc === 'Fail') {
+                analysis.suspicious = true;
+            }
+
+            let output = `Email Header Analysis\n\n`;
+            output += `From Address: ${analysis.from}\n`;
+            output += `Received Headers: ${analysis.received.length} (normal: 2-4)\n`;
+            output += `SPF Check: ${analysis.spf}\n`;
+            output += `DKIM Check: ${analysis.dkim}\n`;
+            output += `DMARC Check: ${analysis.dmarc}\n\n`;
+
+            if (analysis.suspicious) {
+                resultDiv.className = 'security-status status-critical';
+                output += '🚨 SPOOFING DETECTED: This email shows signs of spoofing or tampering. Do not trust its contents!';
+            } else {
+                resultDiv.className = 'security-status status-secure';
+                output += '✅ HEADERS LOOK LEGITIMATE: Authentication checks passed. Still verify content manually.';
+            }
+
+            resultDiv.innerHTML = `
+                <div class="text-lg mb-1">${analysis.suspicious ? '🚨' : '✅'} HEADER INSPECTION COMPLETE</div>
+                <div style="font-size: 0.8em;"><pre>${output}</pre></div>
+            `;
+        }
+
         // Make sure tabs work properly
         document.addEventListener('DOMContentLoaded', function() {
             // Ensure first tab is active
             switchTab('phishShield', {target: document.querySelector('.tab-btn.active')});
-        });
-    </script>
-    <!-- ================= PHISH SHIELD ================== -->
-    <div class="terminal-window mt-10">
-        <div class="terminal-header">
-            <span class="text-white font-bold">🛡 PHISH SHIELD – ANTI PHISHING TOOL</span>
-        </div>
-
-        <div class="terminal-body">
-            <p class="mb-4">Paste any suspicious link or message below to check if it is SAFE or PHISHING.</p>
-
-            <input
-                type="text"
-                id="phishInput"
-                placeholder="Enter suspicious link or message..."
-                class="w-full bg-black border border-green-500 p-3 text-green-400 mb-4"
-            />
-
-            <button onclick="checkPhishing()" class="hacker-button w-full mb-4">
-                CHECK LINK SAFETY
-            </button>
-
-            <div id="phishResult" class="security-status status-warning hidden"></div>
-        </div>
-    </div>
+    });
+</script>
 
 <!-- Chatbot Widget -->
 <div id="chatbot-widget">
@@ -789,7 +1008,7 @@
         <span>💬</span>
     </div>
 
-    <div id="chatbot-window">
+    <div id="chatbot-window" class="hidden">
         <div class="chatbot-header">
             <h3>SECURITY ASSISTANT</h3>
             <p class="subtitle">Ask me about cybersecurity</p>
@@ -881,14 +1100,7 @@
             }
         });
 
-        // Close chatbot when clicking outside
-        document.addEventListener('click', function(e) {
-            const widget = document.getElementById('chatbot-widget');
-            const window = document.getElementById('chatbot-window');
-            if (!widget.contains(e.target) && !window.classList.contains('hidden')) {
-                window.classList.add('hidden');
-            }
-        });
+
     });
 </script>
 </body>
