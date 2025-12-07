@@ -1,4 +1,4 @@
- /* Custom CSS to replace Tailwind classes */
+/* Custom CSS to replace Tailwind classes */
 
 :root {
     --terminal-bg: #0a0a0a;
@@ -498,6 +498,38 @@ body {
 .text-gray-400 {
     color: #9ca3af;
 }
+/* Animated Title Header */
+.animated-title-header {
+    text-align: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+.typing-effect {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--terminal-text);
+    text-shadow: 2px 2px 0 var(--hacker-accent), -2px -2px 0 #00ffff;
+    border-right: 3px solid var(--terminal-text);
+    white-space: nowrap;
+    overflow: hidden;
+    animation: typing 4s steps(22, end), blink-caret 1s step-end infinite;
+    width: 22ch; /* Adjust based on text length */
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 22ch; }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--terminal-text); }
+}
+
 /* Fixed Header Styling */
 .fixed-header {
     position: fixed;
